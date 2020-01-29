@@ -1,0 +1,143 @@
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
+long long int mdc( long long int e, long long int x)
+{
+	long long int aux;
+	while(e%x!=0)
+	{
+		aux=e;
+		e=x;
+		x=aux%e;
+	}
+	return x;
+}
+long long primo(long long int p,long long int *pont)
+{
+	int i,x=1;
+	long long int raiz; 
+	raiz = sqrt(p);
+	if(p==1)
+	{
+	    x= 0;
+	}
+    if(p==0)
+    {
+      x= 0;
+    }
+	for(i=2 ;i <= raiz; i++)
+	{
+		if(p%i==0)
+		{
+		x= 0;
+		}
+	}
+	if(x==0)
+	{
+		printf("O numero: %lld, nao e primo redigite-o:", p);
+		scanf("%lld", pont);
+		p= *pont;
+		primo(p, pont);
+	}
+}
+long long igual(long long int*pont,long long int*pont1)
+{
+	printf("Os numeros nao podem ser iguais redigite-os:");
+	scanf("%lld%lld", pont, pont1);
+	primo(*pont,pont);
+	primo(*pont1,pont1);
+	if(*pont==*pont1)
+	{
+		igual(pont,pont1);
+	}
+}
+long long verificar(long long int e, long long int p, long long int q,long long int *pont)
+{
+	long long int x;
+	p=p-1;
+	q=q-1;
+	x=p*q;
+	if(mdc(e,x) != 1)
+	{
+		printf("O  numero %lld, nao e relativamente primo a (p - 1)(q -1), redigite-o:", e);
+		scanf("%lld", pont);
+		e=*pont;
+		verificar(e,p,q,pont);
+	}
+
+}
+void converte(char frase[],long long int *pont)
+{
+	int cont,i;
+	cont=strlen(frase);
+	for(i=0; i<cont-1; i++)
+	{
+		if(frase[i]==' ')
+		{
+			*(pont+i)=frase[i]+1;
+		}
+		else
+		{
+			*(pont+i)=frase[i]-63;
+		}
+	}
+
+}
+long long criptografar(long long int *pont, long long int n, long long int e, int cont1)
+{
+	int cont;
+	for(cont=0; cont<cont1-1; cont++)
+	{
+		*(pont+cont)=(pow(*(pont+cont), e));
+		*(pont+cont)=*(pont+cont)%n;
+	}
+}
+long long criararquivo(long long int chave, long long int e)
+{
+	FILE *chav;
+	chav= fopen("chave.txt", "w");
+	fprintf(chav,"A chave publica e :%lld %lld",chave, e );
+	fclose(chav);
+}
+int main()
+{
+	int cont,cont1,funcao;
+	int *pont;
+	long long int p, q, e, n, frasen[10000]; char frase [10000];
+	printf("Este programa tem 3 opçoes, selecione o que deseja fazer:\n1 - gerar chave pública\n2 - criptografar\n3 - descriptografar\n");
+	printf("Digite o numero da funcao que deseja ultiliza: ");
+	scanf("%d", &funcao);
+	getchar();
+	if(funcao==1)
+	{
+		printf("Digite os numeros primos p e q:");
+		scanf("%lld%lld", &p,&q);
+		if(p==q)
+		{
+			igual(&p,&q);
+		}
+		primo(p,&p);
+		primo(q,&q);
+		printf("Agora digite o expoente que é relativamente primo a (p - 1)(q -1):");
+		scanf("%lld", &e);
+		verificar(e,p,q,&e);
+		printf("A chave publica da criptografia RSA e: %lld %lld\n", p*q, e);
+		criararquivo(p*q,e);
+	}
+	if (funcao == 2)
+	{
+		printf("Digite o texto a ser criptografado: ");
+		fgets(frase, 4000, stdin);
+		printf("Digite a chave publica para criptografar:");
+		scanf("%lld%lld", &n, &e);
+		converte(frase, frasen);
+		cont1=strlen(frase);
+		criptografar(frasen,n,e,cont1);
+		for(cont=0; cont<cont1-1; cont++)
+		{
+			printf("%lld", frasen[cont]);
+		}
+		printf("\n");
+	}
+	return 0;
+}
