@@ -58,7 +58,7 @@ long long int inversoMod(long long int a, long long int b)
     {
         quociente[i] = a/b;
         i++;
-        resto = a / b;
+        resto = a % b;
         a = b;
         b = resto;
     }
